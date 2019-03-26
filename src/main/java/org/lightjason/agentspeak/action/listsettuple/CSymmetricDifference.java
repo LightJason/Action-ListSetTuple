@@ -23,6 +23,8 @@
 
 package org.lightjason.agentspeak.action.listsettuple;
 
+import com.google.common.collect.ConcurrentHashMultiset;
+import com.google.common.collect.Multiset;
 import org.lightjason.agentspeak.action.IBaseAction;
 import org.lightjason.agentspeak.common.IPath;
 import org.lightjason.agentspeak.language.CCommon;
@@ -33,29 +35,33 @@ import org.lightjason.agentspeak.language.fuzzy.IFuzzyValue;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
 /**
- * checks a list or set is empty.
- * All arguments are collection elements and for each argument
- * a boolean flag for empty is returned, on all non-collection
- * types empty is always false
+ * creates the symmetric difference between lists (difference of union and intersection).
+ * Creates the symmetric difference of all arguments, so all arguments are collections and the action will return
+ * a list with the symmetric difference \f$ (\mathbb{X} \setminus \mathbb{Y}) \cup (\mathbb{B} \setminus \mathbb{A}) \f$
  *
- * {@code [A|B|C] = .collection/listsetisempty( List, Set );}
+ * {@code D = .collection/list/symmetricdifference( [1,2,[3,4]], [7,8,9,4], [[1,2], [3]] );}
+ *
+ * @see https://en.wikipedia.org/wiki/Symmetric_difference
  */
-public final class CListSetIsEmpty extends IBaseAction
+public final class CSymmetricDifference extends IBaseAction
 {
+
     /**
      * serial id
      */
-    private static final long serialVersionUID = 6534790593912478944L;
+    private static final long serialVersionUID = 7657032978898575726L;
     /**
      * action name
      */
-    private static final IPath NAME = namebyclass( CListSetIsEmpty.class, "collection" );
+    private static final IPath NAME = namebyclass( CSymmetricDifference.class, "collection" );
 
     @Nonnull
     @Override
@@ -68,7 +74,7 @@ public final class CListSetIsEmpty extends IBaseAction
     @Override
     public int minimalArgumentNumber()
     {
-        return 1;
+        return 2;
     }
 
     @Nonnull
@@ -77,10 +83,23 @@ public final class CListSetIsEmpty extends IBaseAction
                                            @Nonnull final List<ITerm> p_argument, @Nonnull final List<ITerm> p_return
     )
     {
-        p_argument.stream()
-                  .map( i -> CCommon.isssignableto( i, Collection.class ) && i.<Collection<?>>raw().isEmpty() )
-                  .map( CRawTerm::of )
-                  .forEach( p_return::add );
+        // create a multiset and counts the occurence of element -> on an odd number the element will be returned
+        final Multiset<Object> l_count = ConcurrentHashMultiset.create();
+        CCommon.flatten( p_argument ).parallel().map( ITerm::raw ).forEach( l_count::add );
+        final List<Object> l_result = l_count.entrySet()
+                                             .parallelStream()
+                                             .filter( i -> !( i.getCount() % 2 == 0 ) )
+                                             .map( Multiset.Entry::getElement )
+                                             .sorted( Comparator.comparing( Object::hashCode ) )
+                                             .collect( Collectors.toList() );
+
+        p_return.add(
+            CRawTerm.of(
+                p_parallel
+                ? Collections.synchronizedList( l_result )
+                : l_result
+            )
+        );
 
         return Stream.of();
     }

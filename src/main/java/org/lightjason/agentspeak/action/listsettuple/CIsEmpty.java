@@ -39,23 +39,23 @@ import java.util.stream.Stream;
 
 
 /**
- * returns the size of a list or set.
- * All arguments must be collections and the action returns
- * the size of each collection.
+ * checks a list or set is empty.
+ * All arguments are collection elements and for each argument
+ * a boolean flag for empty is returned, on all non-collection
+ * types empty is always false
  *
- * {@code [A|B|C|D] = .collection/listsetsize( Set, List );}
+ * {@code [A|B|C] = .collection/isempty( List, Set );}
  */
-public final class CListSetSize extends IBaseAction
+public final class CIsEmpty extends IBaseAction
 {
-
     /**
      * serial id
      */
-    private static final long serialVersionUID = -8518502045185704561L;
+    private static final long serialVersionUID = 6534790593912478944L;
     /**
      * action name
      */
-    private static final IPath NAME = namebyclass( CListSetSize.class, "collection" );
+    private static final IPath NAME = namebyclass( CIsEmpty.class, "collection" );
 
     @Nonnull
     @Override
@@ -77,9 +77,8 @@ public final class CListSetSize extends IBaseAction
                                            @Nonnull final List<ITerm> p_argument, @Nonnull final List<ITerm> p_return
     )
     {
-        // any term type
         p_argument.stream()
-                  .map( i -> CCommon.isssignableto( i, Collection.class ) ? i.<Collection<?>>raw().size() : 0 )
+                  .map( i -> CCommon.isssignableto( i, Collection.class ) && i.<Collection<?>>raw().isEmpty() )
                   .map( CRawTerm::of )
                   .forEach( p_return::add );
 

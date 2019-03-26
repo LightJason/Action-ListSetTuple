@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.lightjason.agentspeak.action.listsettuple.set.CAdd;
 import org.lightjason.agentspeak.action.listsettuple.set.CContains;
 import org.lightjason.agentspeak.action.listsettuple.set.CCreate;
+import org.lightjason.agentspeak.action.listsettuple.set.CLambdaStreaming;
 import org.lightjason.agentspeak.action.listsettuple.set.CRemove;
 import org.lightjason.agentspeak.action.listsettuple.set.CToList;
 import org.lightjason.agentspeak.language.CRawTerm;
@@ -161,6 +162,20 @@ public final class TestCActionCollectionSet extends IBaseTest
         Assert.assertEquals( 1, l_return.size() );
         Assert.assertTrue( l_return.get( 0 ).raw() instanceof List<?> );
         Assert.assertArrayEquals( l_set.toArray(), l_return.get( 0 ).<List<?>>raw().toArray() );
+    }
+
+    /**
+     * test lambda
+     */
+    @Test
+    public void lambda()
+    {
+        final Set<Object> l_data = Stream.of( 1, 12.0, "foobar", "foobar", 1, 2 ).collect( Collectors.toSet() );
+
+        Assert.assertArrayEquals(
+            l_data.toArray(),
+            new CLambdaStreaming().apply( l_data ).toArray()
+        );
     }
 
 }

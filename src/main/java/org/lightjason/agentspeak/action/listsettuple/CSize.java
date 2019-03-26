@@ -21,7 +21,7 @@
  * @endcond
  */
 
-package org.lightjason.agentspeak.action.listsettuple.list;
+package org.lightjason.agentspeak.action.listsettuple;
 
 import org.lightjason.agentspeak.action.IBaseAction;
 import org.lightjason.agentspeak.common.IPath;
@@ -34,31 +34,28 @@ import org.lightjason.agentspeak.language.fuzzy.IFuzzyValue;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
 /**
- * creates the intersection between lists.
- * All arguments are lists and the action returns the
- * intersection \f$ \cap M_i \forall i \in \mathbb{N} \f$
+ * returns the size of a list or set.
+ * All arguments must be collections and the action returns
+ * the size of each collection.
  *
- * {@code I = .collection/list/intersect( [1,2,[3,4]], [3,4,[8,9]], [1,2,3,5] );}
+ * {@code [A|B|C|D] = .collection/size( Set, List );}
  */
-public final class CIntersect extends IBaseAction
+public final class CSize extends IBaseAction
 {
 
     /**
      * serial id
      */
-    private static final long serialVersionUID = 7453409804177199062L;
+    private static final long serialVersionUID = -8518502045185704561L;
     /**
      * action name
      */
-    private static final IPath NAME = namebyclass( CIntersect.class, "collection", "list" );
+    private static final IPath NAME = namebyclass( CSize.class, "collection" );
 
     @Nonnull
     @Override
@@ -71,7 +68,7 @@ public final class CIntersect extends IBaseAction
     @Override
     public int minimalArgumentNumber()
     {
-        return 2;
+        return 1;
     }
 
     @Nonnull
@@ -80,19 +77,11 @@ public final class CIntersect extends IBaseAction
                                            @Nonnull final List<ITerm> p_argument, @Nonnull final List<ITerm> p_return
     )
     {
-        // all arguments must be lists (build unique list of all elements and check all collection if an element exists in each collection)
-        final List<Object> l_result = CCommon.flatten( p_argument )
-                                             .parallel()
-                                             .map( ITerm::raw )
-                                             .distinct()
-                                             .filter(
-                                                 i -> p_argument.parallelStream().allMatch( j -> j.<Collection<?>>raw().contains( i ) )
-                                             ).collect( Collectors.toList() );
-        l_result.sort( Comparator.comparing( Object::hashCode ) );
-
-        p_return.add( CRawTerm.of(
-            p_parallel ? Collections.synchronizedList( l_result ) : l_result
-        ) );
+        // any term type
+        p_argument.stream()
+                  .map( i -> CCommon.isssignableto( i, Collection.class ) ? i.<Collection<?>>raw().size() : 0 )
+                  .map( CRawTerm::of )
+                  .forEach( p_return::add );
 
         return Stream.of();
     }

@@ -41,6 +41,7 @@ import org.lightjason.agentspeak.testing.IBaseTest;
 import java.text.MessageFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -128,7 +129,7 @@ public final class TestCActionCollection extends IBaseTest
     {
         final List<ITerm> l_return = new ArrayList<>();
 
-        new CListSetSize().execute(
+        new CSize().execute(
             false, IContext.EMPTYPLAN,
             p_input.getLeft(),
             l_return
@@ -149,7 +150,7 @@ public final class TestCActionCollection extends IBaseTest
     {
         final List<ITerm> l_return = new ArrayList<>();
 
-        new CListSetIsEmpty().execute(
+        new CIsEmpty().execute(
             false, IContext.EMPTYPLAN,
             Stream.of( new ArrayList<>(), new HashSet<>(), HashMultimap.create(), new HashMap<>(), Stream.of( "1", 2 ).collect( Collectors.toList() ), new Object() )
                   .map( CRawTerm::of )
@@ -170,7 +171,7 @@ public final class TestCActionCollection extends IBaseTest
         final List<Integer> l_list = IntStream.range( 0, 10 ).boxed().collect( Collectors.toList() );
         final Set<Integer> l_set = IntStream.range( 10, 20 ).boxed().collect( Collectors.toSet() );
 
-        new CListSetClear().execute(
+        new CClear().execute(
             false, IContext.EMPTYPLAN,
             Stream.of( l_list, l_set ).map( CRawTerm::of ).collect( Collectors.toList() ),
             Collections.emptyList()
@@ -178,5 +179,92 @@ public final class TestCActionCollection extends IBaseTest
 
         Assert.assertTrue( l_list.isEmpty() );
         Assert.assertTrue( l_set.isEmpty() );
+    }
+
+    /**
+     * test complement action
+     */
+    @Test
+    public void complement()
+    {
+        final List<ITerm> l_return = new ArrayList<>();
+
+        Assert.assertTrue(
+            execute(
+                new CComplement(),
+                false,
+                Stream.of(
+                    CRawTerm.of( Stream.of( "a", "b", 1, 2 ).collect( Collectors.toList() ) ),
+                    CRawTerm.of( Stream.of( "x", "y", 4, "a", 5, 1 ).collect( Collectors.toList() ) )
+                ).collect( Collectors.toList() ),
+                l_return
+            )
+        );
+
+        Assert.assertEquals( 1, l_return.size() );
+        Assert.assertTrue( l_return.get( 0 ).raw() instanceof List<?> );
+        Assert.assertEquals( "b", l_return.get( 0 ).<List<?>>raw().get( 0 ) );
+        Assert.assertEquals( 2, l_return.get( 0 ).<List<?>>raw().get( 1 ) );
+    }
+
+    /**
+     * test intersect
+     */
+    @Test
+    public void intersect()
+    {
+        final List<ITerm> l_return = new ArrayList<>();
+
+        new CIntersect().execute(
+            false, IContext.EMPTYPLAN,
+            Stream.of(
+                Stream.of( 1, 2 ).collect( Collectors.toList() ),
+                Stream.of( 3, 4, 2 ).collect( Collectors.toSet() ),
+                Stream.of( 8, 9, 2 ).collect( Collectors.toList() ),
+                Stream.of( 1, 2, 3, 5 ).collect( Collectors.toSet() )
+            ).map( CRawTerm::of ).collect( Collectors.toList() ),
+            l_return
+        );
+
+        Assert.assertEquals( 1, l_return.size() );
+        Assert.assertTrue( l_return.get( 0 ).raw() instanceof List<?> );
+        Assert.assertArrayEquals( Stream.of( 2 ).toArray(), l_return.get( 0 ).<Collection<?>>raw().toArray() );
+    }
+
+    /**
+     * test symmetric difference
+     */
+    @Test
+    public void symmetricdifference()
+    {
+        final List<ITerm> l_return = new ArrayList<>();
+
+        new CSymmetricDifference().execute(
+            false, IContext.EMPTYPLAN,
+            Stream.of( 1, 2, 3, 3, 4 ).map( CRawTerm::of ).collect( Collectors.toList() ),
+            l_return );
+
+        Assert.assertEquals( 1, l_return.size() );
+        Assert.assertTrue( l_return.get( 0 ).raw() instanceof List<?> );
+        Assert.assertArrayEquals( Stream.of( 1, 2, 4 ).toArray(), l_return.get( 0 ).<List<?>>raw().toArray() );
+    }
+
+    /**
+     * test union
+     */
+    @Test
+    public void union()
+    {
+        final List<ITerm> l_return = new ArrayList<>();
+
+        new CUnion().execute(
+            false, IContext.EMPTYPLAN,
+            Stream.of( 1, 2, 3, 3, 4, Stream.of( "xxx" ).collect( Collectors.toList() ) ).map( CRawTerm::of ).collect( Collectors.toList() ),
+            l_return
+        );
+
+        Assert.assertEquals( 1, l_return.size() );
+        Assert.assertTrue( l_return.get( 0 ).raw() instanceof List<?> );
+        Assert.assertArrayEquals( Stream.of( 1, 2, 3, 4, "xxx" ).toArray(), l_return.get( 0 ).<Collection<?>>raw().toArray() );
     }
 }

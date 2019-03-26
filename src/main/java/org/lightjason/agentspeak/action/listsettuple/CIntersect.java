@@ -21,10 +21,11 @@
  * @endcond
  */
 
-package org.lightjason.agentspeak.action.listsettuple.list;
+package org.lightjason.agentspeak.action.listsettuple;
 
 import org.lightjason.agentspeak.action.IBaseAction;
 import org.lightjason.agentspeak.common.IPath;
+import org.lightjason.agentspeak.language.CCommon;
 import org.lightjason.agentspeak.language.CRawTerm;
 import org.lightjason.agentspeak.language.ITerm;
 import org.lightjason.agentspeak.language.execution.IContext;
@@ -34,31 +35,30 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
 /**
- * creates the complement between lists.
- * The action uses two input arguments \f$ \mathbb{A} \f$ and \f$ \mathbb{B} \f$ and returns a
- * list of all elements which contains \f$ \mathbb{A} \setminus \mathbb{B} \f$
+ * creates the intersection between collections.
+ * All arguments are collections and the action returns the
+ * intersection \f$ \cap M_i \forall i \in \mathbb{N} \f$
  *
- * {@code L = .collection/list/complement( [1,2,3], [3,4,5] );}
- *
- * @see https://en.wikipedia.org/wiki/Complement_(set_theory)
+ * {@code I = .collection/intersect( [1,2],[3,4], [3,4], [8,9], [1,2,3,5] );}
  */
-public final class CComplement extends IBaseAction
+public final class CIntersect extends IBaseAction
 {
 
     /**
      * serial id
      */
-    private static final long serialVersionUID = 8021131769211400348L;
+    private static final long serialVersionUID = 7453409804177199062L;
     /**
      * action name
      */
-    private static final IPath NAME = namebyclass( CComplement.class, "collection", "list" );
+    private static final IPath NAME = namebyclass( CIntersect.class, "collection" );
 
     @Nonnull
     @Override
@@ -80,13 +80,17 @@ public final class CComplement extends IBaseAction
                                            @Nonnull final List<ITerm> p_argument, @Nonnull final List<ITerm> p_return
     )
     {
-        if ( p_argument.get( 0 ).<List<?>>raw().isEmpty() && p_argument.get( 1 ).<List<?>>raw().isEmpty() )
-            return p_context.agent().fuzzy().membership().fail();
+        // all arguments must be lists (build unique list of all elements and check all collection if an element exists in each collection)
+        final List<Object> l_result = CCommon.flatten( p_argument )
+                                             .parallel()
+                                             .map( ITerm::raw )
+                                             .distinct()
+                                             .filter( i -> p_argument.parallelStream().allMatch( j -> j.<Collection<?>>raw().contains( i ) ) )
+                                             .sorted( Comparator.comparing( Object::hashCode ) ).collect( Collectors.toList() );
 
-        // all arguments must be lists, first argument is the full list
-        final Collection<Object> l_result = new LinkedList<>( p_argument.get( 0 ).<Collection<Object>>raw() );
-        l_result.removeAll( p_argument.get( 1 ).<Collection<Object>>raw() );
-        p_return.add( CRawTerm.of( p_parallel ? Collections.synchronizedCollection( l_result ) : l_result ) );
+        p_return.add( CRawTerm.of(
+            p_parallel ? Collections.synchronizedList( l_result ) : l_result
+        ) );
 
         return Stream.of();
     }

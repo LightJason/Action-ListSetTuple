@@ -35,7 +35,6 @@ import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 
@@ -76,7 +75,7 @@ public final class CToSet extends IBaseAction
                                            @Nonnull final List<ITerm> p_argument, @Nonnull final List<ITerm> p_return )
     {
         p_argument.stream()
-                  .map( ITerm::<Set<?>>raw )
+                  .map( ITerm::<List<?>>raw )
                   .map( HashSet::new )
                   .map( i -> p_parallel ? Collections.synchronizedSet( i ) : i )
                   .map( CRawTerm::of )

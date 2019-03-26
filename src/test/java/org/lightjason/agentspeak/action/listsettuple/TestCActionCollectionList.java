@@ -28,31 +28,33 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.lightjason.agentspeak.action.listsettuple.list.CAdd;
-import org.lightjason.agentspeak.action.listsettuple.list.CComplement;
 import org.lightjason.agentspeak.action.listsettuple.list.CCreate;
 import org.lightjason.agentspeak.action.listsettuple.list.CFlat;
 import org.lightjason.agentspeak.action.listsettuple.list.CFlatConcat;
 import org.lightjason.agentspeak.action.listsettuple.list.CGet;
+import org.lightjason.agentspeak.action.listsettuple.list.CLambdaStreaming;
 import org.lightjason.agentspeak.action.listsettuple.list.CRange;
 import org.lightjason.agentspeak.action.listsettuple.list.CRemove;
 import org.lightjason.agentspeak.action.listsettuple.list.CReverse;
 import org.lightjason.agentspeak.action.listsettuple.list.CSet;
 import org.lightjason.agentspeak.action.listsettuple.list.CSubList;
-import org.lightjason.agentspeak.action.listsettuple.list.CSymmetricDifference;
+import org.lightjason.agentspeak.action.listsettuple.list.CToSet;
 import org.lightjason.agentspeak.action.listsettuple.list.CUnique;
 import org.lightjason.agentspeak.action.listsettuple.list.CZip;
 import org.lightjason.agentspeak.error.context.CExecutionIllegealArgumentException;
-import org.lightjason.agentspeak.language.CCommon;
 import org.lightjason.agentspeak.language.CRawTerm;
 import org.lightjason.agentspeak.language.ITerm;
 import org.lightjason.agentspeak.language.execution.IContext;
+import org.lightjason.agentspeak.language.execution.IExecution;
 import org.lightjason.agentspeak.testing.IBaseTest;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -138,33 +140,6 @@ public final class TestCActionCollectionList extends IBaseTest
         Assert.assertEquals( 1, l_list.get( 1 ) );
         Assert.assertEquals( "b", l_list.get( 2 ) );
         Assert.assertEquals( true, l_list.get( 3 ) );
-    }
-
-
-    /**
-     * test complement action
-     */
-    @Test
-    public void complement()
-    {
-        final List<ITerm> l_return = new ArrayList<>();
-
-        Assert.assertTrue(
-            execute(
-                new CComplement(),
-                    false,
-                    Stream.of(
-                        CRawTerm.of( Stream.of( "a", "b", 1, 2 ).collect( Collectors.toList() ) ),
-                        CRawTerm.of( Stream.of( "x", "y", 4, "a", 5, 1 ).collect( Collectors.toList() ) )
-                    ).collect( Collectors.toList() ),
-                    l_return
-            )
-        );
-
-        Assert.assertEquals( 1, l_return.size() );
-        Assert.assertTrue( CCommon.isssignableto( l_return.get( 0 ), List.class ) );
-        Assert.assertEquals( "b", l_return.get( 0 ).<List<?>>raw().get( 0 ) );
-        Assert.assertEquals( 2, l_return.get( 0 ).<List<?>>raw().get( 1 ) );
     }
 
 
@@ -322,23 +297,18 @@ public final class TestCActionCollectionList extends IBaseTest
     public void range()
     {
         final List<ITerm> l_return = new ArrayList<>();
+        final IExecution l_range = new CRange();
 
-        Assert.assertTrue(
-            execute(
-                new CRange(),
-                false,
-                Stream.of( 0, 5, 7, 9 ).map( CRawTerm::of ).collect( Collectors.toList() ),
-                l_return
-            )
+        l_range.execute(
+            false, IContext.EMPTYPLAN,
+            Stream.of( 0, 5, 7, 9 ).map( CRawTerm::of ).collect( Collectors.toList() ),
+            l_return
         );
 
-        Assert.assertTrue(
-            execute(
-                new CRange(),
-                true,
-                Stream.of( 1, 7 ).map( CRawTerm::of ).collect( Collectors.toList() ),
-                l_return
-            )
+        l_range.execute(
+            true, IContext.EMPTYPLAN,
+            Stream.of( 1, 7 ).map( CRawTerm::of ).collect( Collectors.toList() ),
+            l_return
         );
 
         Assert.assertEquals( l_return.size(), 3 );
@@ -371,23 +341,18 @@ public final class TestCActionCollectionList extends IBaseTest
     public void sublist()
     {
         final List<ITerm> l_return = new ArrayList<>();
+        final IExecution l_sublist = new CSubList();
 
-        Assert.assertTrue(
-            execute(
-                new CSubList(),
-                false,
-                Stream.of( Stream.of( "ax", "bx", "c", 1, 2, 3 ).collect( Collectors.toList() ), 0, 2, 2, 4 ).map( CRawTerm::of ).collect( Collectors.toList() ),
-                l_return
-            )
+        l_sublist.execute(
+            false, IContext.EMPTYPLAN,
+            Stream.of( Stream.of( "ax", "bx", "c", 1, 2, 3 ).collect( Collectors.toList() ), 0, 2, 2, 4 ).map( CRawTerm::of ).collect( Collectors.toList() ),
+            l_return
         );
 
-        Assert.assertTrue(
-            execute(
-                new CSubList(),
-                true,
-                Stream.of( Stream.of( 8, 9, 10 ).collect( Collectors.toList() ), 1, 2 ).map( CRawTerm::of ).collect( Collectors.toList() ),
-                l_return
-            )
+        l_sublist.execute(
+            true, IContext.EMPTYPLAN,
+            Stream.of( Stream.of( 8, 9, 10 ).collect( Collectors.toList() ), 1, 2 ).map( CRawTerm::of ).collect( Collectors.toList() ),
+            l_return
         );
 
         Assert.assertEquals( 3, l_return.size() );
@@ -411,13 +376,10 @@ public final class TestCActionCollectionList extends IBaseTest
                                         .mapToObj( i -> RandomStringUtils.random( l_random.nextInt( 100 ) + 1 ) )
                                         .collect( Collectors.toList() );
 
-        Assert.assertTrue(
-            execute(
-                new CFlat(),
-                false,
-                l_list.stream().map( CRawTerm::of ).collect( Collectors.toList() ),
-                l_return
-            )
+        new CFlat().execute(
+            false, IContext.EMPTYPLAN,
+            l_list.stream().map( CRawTerm::of ).collect( Collectors.toList() ),
+            l_return
         );
 
         Assert.assertEquals( l_list.size(), l_return.size() );
@@ -438,13 +400,10 @@ public final class TestCActionCollectionList extends IBaseTest
                                         .mapToObj( i -> RandomStringUtils.random( l_random.nextInt( 100 ) + 1 ) )
                                         .collect( Collectors.toList() );
 
-        Assert.assertTrue(
-            execute(
-                new CFlatConcat(),
-                false,
-                l_list.stream().map( CRawTerm::of ).collect( Collectors.toList() ),
-                l_return
-            )
+        new CFlatConcat().execute(
+            false, IContext.EMPTYPLAN,
+            l_list.stream().map( CRawTerm::of ).collect( Collectors.toList() ),
+            l_return
         );
 
         Assert.assertEquals( l_return.size(), 1 );
@@ -474,14 +433,12 @@ public final class TestCActionCollectionList extends IBaseTest
     public void zip()
     {
         final List<ITerm> l_return = new ArrayList<>();
+        final IExecution l_zip = new CZip();
 
-        Assert.assertTrue(
-            execute(
-                new CZip(),
-                false,
-                IntStream.range( 0, 6 ).boxed().map( CRawTerm::of ).collect( Collectors.toList() ),
-                l_return
-            )
+        l_zip.execute(
+            false, IContext.EMPTYPLAN,
+            IntStream.range( 0, 6 ).boxed().map( CRawTerm::of ).collect( Collectors.toList() ),
+            l_return
         );
 
         Assert.assertEquals( 1, l_return.size() );
@@ -496,13 +453,10 @@ public final class TestCActionCollectionList extends IBaseTest
         Assert.assertEquals( 2, l_return.get( 0 ).<List<AbstractMap.SimpleEntry<?, ?>>>raw().get( 2 ).getKey() );
         Assert.assertEquals( 5, l_return.get( 0 ).<List<AbstractMap.SimpleEntry<?, ?>>>raw().get( 2 ).getValue() );
 
-        Assert.assertTrue(
-            execute(
-                new CZip(),
-                true,
-                Stream.of( 1, 2 ).map( CRawTerm::of ).collect( Collectors.toList() ),
-                l_return
-            )
+        l_zip.execute(
+            true, IContext.EMPTYPLAN,
+            Stream.of( 1, 2 ).map( CRawTerm::of ).collect( Collectors.toList() ),
+            l_return
         );
 
         Assert.assertEquals( 2, l_return.size() );
@@ -518,21 +472,19 @@ public final class TestCActionCollectionList extends IBaseTest
     public void unique()
     {
         final List<ITerm> l_return = new ArrayList<>();
+        final IExecution l_unique = new CUnique();
 
-        Assert.assertTrue(
-            execute(
-                new CUnique(),
-                false,
-                Stream.of( 1, 1, 3, 4, 5, 5 ).map( CRawTerm::of ).collect( Collectors.toList() ),
-                l_return
-            )
+        l_unique.execute(
+            false, IContext.EMPTYPLAN,
+            Stream.of( 1, 1, 3, 4, 5, 5 ).map( CRawTerm::of ).collect( Collectors.toList() ),
+            l_return
         );
 
         Assert.assertEquals( l_return.size(), 1 );
         Assert.assertEquals( l_return.get( 0 ).<List<?>>raw().size(), 4 );
         Assert.assertArrayEquals( l_return.get( 0 ).<List<?>>raw().toArray(), Stream.of( 1, 3, 4, 5 ).toArray() );
 
-        new CUnique().execute(
+        l_unique.execute(
             true, IContext.EMPTYPLAN,
             Stream.of( 1 ).map( CRawTerm::of ).collect( Collectors.toList() ),
             l_return
@@ -543,25 +495,36 @@ public final class TestCActionCollectionList extends IBaseTest
     }
 
     /**
-     * test symmetric difference
+     * test to-set
      */
     @Test
-    public void symmetricdifference()
+    public void toset()
     {
         final List<ITerm> l_return = new ArrayList<>();
 
-        Assert.assertTrue(
-            execute(
-                new CSymmetricDifference(),
-                false,
-                Stream.of( 1, 2, 3, 3, 4 ).map( CRawTerm::of ).collect( Collectors.toList() ),
-                l_return
-            )
+        new CToSet().execute(
+            false, IContext.EMPTYPLAN,
+            Stream.of( Stream.of( 1, 1, 3, 4, 5, 5 ).collect( Collectors.toList() ) ).map( CRawTerm::of ).collect( Collectors.toList() ),
+            l_return
         );
 
         Assert.assertEquals( 1, l_return.size() );
-        Assert.assertTrue( l_return.get( 0 ).raw() instanceof List<?> );
-        Assert.assertArrayEquals( Stream.of( 1, 2, 4 ).toArray(), l_return.get( 0 ).<List<?>>raw().toArray() );
+        Assert.assertTrue( l_return.get( 0 ).raw() instanceof Set<?> );
+        Assert.assertArrayEquals( Stream.of( 1, 3, 4, 5 ).toArray(), l_return.get( 0 ).<Collection<?>>raw().toArray() );
+    }
+
+    /**
+     * test lambda
+     */
+    @Test
+    public void lambda()
+    {
+        final List<Object> l_data = Stream.of( 1, 12.0, "foobar" ).collect( Collectors.toList() );
+
+        Assert.assertArrayEquals(
+            l_data.toArray(),
+            new CLambdaStreaming().apply( l_data ).toArray()
+        );
     }
 
 }
