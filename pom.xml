@@ -31,7 +31,7 @@
     <!-- project meta information -->
     <name>LightJason AgentSpeak(L++) - List/Set/Tuple Action</name>
     <description>AgentSpeak(L++) action for list/set/tuple structure</description>
-    <url>https://github.com/LightJason/AgentSpeak</url>
+    <url>https://github.com/LightJason/Java-Action-ListSetTuple</url>
     
     <organization>
         <name>LightJason</name>
@@ -47,13 +47,13 @@
     
     <issueManagement>
         <system>GitHub Issues</system>
-        <url>https://github.com/LightJason/Action-ListSetTuple/issues</url>
+        <url>https://github.com/LightJason/Java-Action-ListSetTuple/issues</url>
     </issueManagement>
     
     <scm>
-        <url>https://github.com/LightJason/Action-ListSetTuple</url>
-        <connection>scm:git:git://github.com:LightJason/Action-ListSetTuple.git</connection>
-        <developerConnection>scm:git:git@github.com:LightJason/Action-ListSetTuple.git</developerConnection>
+        <url>https://github.com/LightJason/Java-Action-ListSetTuple</url>
+        <connection>scm:git:git://github.com:LightJason/Java-Action-ListSetTuple.git</connection>
+        <developerConnection>scm:git:git@github.com:LightJason/Java-Action-ListSetTuple.git</developerConnection>
         <tag>v0.0.1</tag>
     </scm>
     
