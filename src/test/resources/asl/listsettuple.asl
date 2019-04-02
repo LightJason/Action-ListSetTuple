@@ -22,9 +22,9 @@
  */
 
 // -----
-// agent for testing collection actions
+// agent for testing list-set-tuple actions
 // @iteration 2
-// @testcount 5
+// @testcount 4
 // -----
 
 // initial-goal
@@ -34,24 +34,7 @@
  * base test
  */
 +!test <-
-    !testindex;
     !testlist
-.
-
-
-/**
- * test max/min index
- */
-+!testindex <-
-    Distribution = .math/statistic/createdistribution( "normal", 20, 100 );
-    RV = .math/statistic/randomsample( Distribution, 8 );
-
-    MinIdx = .math/minindex(RV);
-    MaxIdx = .math/maxindex(RV);
-
-    .generic/print("min & max index", MinIdx, MaxIdx, RV);
-
-    .test/result( success )
 .
 
 
