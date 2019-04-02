@@ -42,27 +42,27 @@
  * test list operation
  */
 +!testlist <-
-    Intersect = .collection/list/intersect( [1,2,3,4,5], [3,4,5,6,7], [3,8,9,5] );
+    Intersect = .collection/intersect( [1,2,3,4,5], [3,4,5,6,7], [3,8,9,5] );
     [I1|I2]  = Intersect;
-    .generic/print("intersect", Intersect, I1, I2);
+    .test/print("intersect", Intersect, I1, I2);
     RI = I1 == 3 && I2 == 5;
     .test/result( RI, "intersection has been failed" );
 
-    Union = .collection/list/union( [1,2], [3,4], [4,5] );
+    Union = .collection/union( [1,2], [3,4], [4,5] );
     [U1|U2|U3|U4|U5] = Union;
-    .generic/print("union", Union, U1, U2, U3, U4, U5);
+    .test/print("union", Union, U1, U2, U3, U4, U5);
     RU = U1 == 1 && U2 == 2 && U3 == 3 && U4 == 4 && U5 == 5;
     .test/result( RU, "union has been failed" );
 
-    SD = .collection/list/symmetricdifference( [1,2,3], [3,4] );
+    SD = .collection/symmetricdifference( [1,2,3], [3,4] );
     [SD1|SD2|SD3] = SD;
-    .generic/print( "symmetric difference", SD, SD1, SD2, SD3);
+    .test/print( "symmetric difference", SD, SD1, SD2, SD3);
     RSD = SD1 == 1 && SD2 == 2 && SD3 == 4;
     .test/result( RSD, "symmetric difference has been failed" );
 
-    CP = .collection/list/complement( [1,2,3,4,5], [1,2] );
+    CP = .collection/complement( [1,2,3,4,5], [1,2] );
     [CP1|CP2|CP3] = CP;
-    .generic/print("complement", CP, CP1, CP2, CP3);
+    .test/print("complement", CP, CP1, CP2, CP3);
     RCP = CP1 == 3 && CP2 == 4 && CP3 == 5;
     .test/result( RCP, "complement has been failed" )
 .
