@@ -28,7 +28,6 @@ import org.lightjason.agentspeak.language.execution.lambda.ILambdaStreaming;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Stream;
 
 
