@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.lightjason.agentspeak.action.listsettuple.set.CAdd;
 import org.lightjason.agentspeak.action.listsettuple.set.CContains;
 import org.lightjason.agentspeak.action.listsettuple.set.CCreate;
-import org.lightjason.agentspeak.action.listsettuple.set.CLambdaStreaming;
 import org.lightjason.agentspeak.action.listsettuple.set.CRemove;
 import org.lightjason.agentspeak.action.listsettuple.set.CToList;
 import org.lightjason.agentspeak.language.CRawTerm;

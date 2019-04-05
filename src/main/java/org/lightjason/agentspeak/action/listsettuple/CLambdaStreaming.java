@@ -21,28 +21,29 @@
  * @endcond
  */
 
-package org.lightjason.agentspeak.action.listsettuple.set;
+package org.lightjason.agentspeak.action.listsettuple;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import org.lightjason.agentspeak.action.IBaseLambdaStreaming;
+import org.lightjason.agentspeak.language.execution.lambda.ILambdaStreaming;
 
-import java.util.AbstractSet;
-import java.util.Set;
+import javax.annotation.Nonnull;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Stream;
 
 
 /**
- * stream of a set
+ * streaming of list
  */
-public final class CLambdaStreaming extends IBaseLambdaStreaming<Set<?>>
+public final class CLambdaStreaming implements ILambdaStreaming<Collection<?>>
 {
     /**
      * serial id
      */
-    private static final long serialVersionUID = 7698873604877279069L;
+    private static final long serialVersionUID = 7453430804177199062L;
 
     @Override
-    public Stream<?> apply( final Set<?> p_objects )
+    public Stream<?> apply( @Nonnull final Collection<?> p_objects )
     {
         return p_objects.stream();
     }
@@ -51,6 +52,6 @@ public final class CLambdaStreaming extends IBaseLambdaStreaming<Set<?>>
     @Override
     public Stream<Class<?>> assignable()
     {
-        return Stream.of( AbstractSet.class, Set.class );
+        return Stream.of( Collection.class );
     }
 }

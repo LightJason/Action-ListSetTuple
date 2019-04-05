@@ -32,7 +32,6 @@ import org.lightjason.agentspeak.action.listsettuple.list.CCreate;
 import org.lightjason.agentspeak.action.listsettuple.list.CFlat;
 import org.lightjason.agentspeak.action.listsettuple.list.CFlatConcat;
 import org.lightjason.agentspeak.action.listsettuple.list.CGet;
-import org.lightjason.agentspeak.action.listsettuple.list.CLambdaStreaming;
 import org.lightjason.agentspeak.action.listsettuple.list.CRange;
 import org.lightjason.agentspeak.action.listsettuple.list.CRemove;
 import org.lightjason.agentspeak.action.listsettuple.list.CReverse;
