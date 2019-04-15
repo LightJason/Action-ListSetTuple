@@ -100,7 +100,7 @@ public final class CZip extends IBaseAction
             )
         );
 
-        return Stream.of();
+        return Stream.empty();
     }
 
 }

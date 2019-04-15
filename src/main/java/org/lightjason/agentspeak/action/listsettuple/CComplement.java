@@ -88,7 +88,7 @@ public final class CComplement extends IBaseAction
         l_result.removeAll( p_argument.get( 1 ).<Collection<Object>>raw() );
         p_return.add( CRawTerm.of( p_parallel ? Collections.synchronizedCollection( l_result ) : l_result ) );
 
-        return Stream.of();
+        return Stream.empty();
     }
 
 }

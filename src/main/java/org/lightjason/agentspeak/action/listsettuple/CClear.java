@@ -74,7 +74,7 @@ public final class CClear extends IBaseAction
     {
         // any term type
         p_argument.parallelStream().forEach( i -> i.<Collection<?>>raw().clear() );
-        return Stream.of();
+        return Stream.empty();
     }
 
 }

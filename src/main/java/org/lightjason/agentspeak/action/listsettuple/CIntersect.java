@@ -92,7 +92,7 @@ public final class CIntersect extends IBaseAction
             p_parallel ? Collections.synchronizedList( l_result ) : l_result
         ) );
 
-        return Stream.of();
+        return Stream.empty();
     }
 
 }

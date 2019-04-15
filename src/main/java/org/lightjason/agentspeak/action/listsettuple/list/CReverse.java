@@ -78,7 +78,7 @@ public final class CReverse extends IBaseAction
     {
         // all arguments are list references
         p_return.addAll( Lists.reverse( CCommon.flatten( p_argument ).collect( Collectors.toList() ) ) );
-        return Stream.of();
+        return Stream.empty();
     }
 
 }

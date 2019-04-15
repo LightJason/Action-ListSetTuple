@@ -105,7 +105,7 @@ public final class CRemove extends IBaseAction
         l_list.clear();
         l_list.addAll( l_result );
 
-        return Stream.of();
+        return Stream.empty();
     }
 
 }

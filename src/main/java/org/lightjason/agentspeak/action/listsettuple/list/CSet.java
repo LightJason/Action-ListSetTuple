@@ -79,7 +79,7 @@ public final class CSet extends IBaseAction
                   .map( ITerm::<List<Object>>raw )
                   .forEach( i -> i.set( p_argument.get( 0 ).<Number>raw().intValue(), p_argument.get( 1 ).raw() ) );
 
-        return Stream.of();
+        return Stream.empty();
     }
 
 }

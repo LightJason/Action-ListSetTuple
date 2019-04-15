@@ -77,6 +77,6 @@ public final class CFlat extends IBaseAction
     )
     {
         CCommon.flatten( p_argument ).forEach( p_return::add );
-        return Stream.of();
+        return Stream.empty();
     }
 }

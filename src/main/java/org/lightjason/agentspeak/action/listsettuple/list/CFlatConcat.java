@@ -80,7 +80,7 @@ public final class CFlatConcat extends IBaseAction
     {
         final List<?> l_list = CCommon.flatten( p_argument ).map( ITerm::raw ).collect( Collectors.toList() );
         p_return.add( CRawTerm.of( p_parallel ? Collections.synchronizedList( l_list ) : l_list ) );
-        return Stream.of();
+        return Stream.empty();
     }
 
 }

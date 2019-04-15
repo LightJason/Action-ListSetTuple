@@ -80,6 +80,6 @@ public final class CAdd extends IBaseAction
                .map( ITerm::raw )
                .forEach( l_set::add );
 
-        return Stream.of();
+        return Stream.empty();
     }
 }

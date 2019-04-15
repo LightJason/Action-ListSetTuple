@@ -91,7 +91,7 @@ public final class CUnion extends IBaseAction
             )
         );
 
-        return Stream.of();
+        return Stream.empty();
     }
 
 }

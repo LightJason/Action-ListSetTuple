@@ -79,6 +79,6 @@ public final class CAdd extends IBaseAction
                   .map( ITerm::<List<Object>>raw )
                   .forEach( i -> i.add( p_argument.get( 0 ).raw() ) );
 
-        return Stream.of();
+        return Stream.empty();
     }
 }

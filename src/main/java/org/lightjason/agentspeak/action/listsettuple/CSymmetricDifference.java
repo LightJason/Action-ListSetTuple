@@ -101,7 +101,7 @@ public final class CSymmetricDifference extends IBaseAction
             )
         );
 
-        return Stream.of();
+        return Stream.empty();
     }
 
 }

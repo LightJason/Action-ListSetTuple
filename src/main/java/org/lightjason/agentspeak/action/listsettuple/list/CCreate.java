@@ -84,7 +84,7 @@ public final class CCreate extends IBaseAction
             : l_list
         ) );
 
-        return Stream.of();
+        return Stream.empty();
     }
 
 }

@@ -81,7 +81,7 @@ public final class CFlat extends IBaseAction
                   .map( CRawTerm::of )
                   .forEach( p_return::add );
 
-        return Stream.of();
+        return Stream.empty();
     }
 
 }

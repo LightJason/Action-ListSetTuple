@@ -283,7 +283,7 @@ public final class TestCActionCollectionList extends IBaseTest
         new CRange().execute(
             false,
             IContext.EMPTYPLAN,
-            Stream.of().map( CRawTerm::of ).collect( Collectors.toList() ),
+            Collections.emptyList(),
             Collections.emptyList()
         );
     }
