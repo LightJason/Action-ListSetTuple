@@ -32,6 +32,10 @@ import org.lightjason.agentspeak.action.listsettuple.list.CCreate;
 import org.lightjason.agentspeak.action.listsettuple.list.CFlat;
 import org.lightjason.agentspeak.action.listsettuple.list.CFlatConcat;
 import org.lightjason.agentspeak.action.listsettuple.list.CGet;
+import org.lightjason.agentspeak.action.listsettuple.list.CPullEnd;
+import org.lightjason.agentspeak.action.listsettuple.list.CPullFront;
+import org.lightjason.agentspeak.action.listsettuple.list.CPushEnd;
+import org.lightjason.agentspeak.action.listsettuple.list.CPushFront;
 import org.lightjason.agentspeak.action.listsettuple.list.CRange;
 import org.lightjason.agentspeak.action.listsettuple.list.CRemove;
 import org.lightjason.agentspeak.action.listsettuple.list.CReverse;
@@ -524,6 +528,72 @@ public final class TestCActionCollectionList extends IBaseTest
             l_data.toArray(),
             new CLambdaStreaming().apply( l_data ).toArray()
         );
+    }
+
+    /**
+     * pushs elements to the front / end
+     */
+    @Test
+    public void pushfrontend()
+    {
+        final List<Object> l_data = Stream.of( "x", "y" ).collect( Collectors.toList() );
+
+        new CPushFront().execute(
+            false,
+            IContext.EMPTYPLAN,
+            Stream.of( l_data, 1, 2 ).map( CRawTerm::of ).collect( Collectors.toList() ),
+            Collections.emptyList()
+        );
+
+        Assert.assertArrayEquals(
+            Stream.of( 2, 1, "x", "y" ).toArray(),
+            l_data.toArray()
+        );
+
+        new CPushEnd().execute(
+            false,
+            IContext.EMPTYPLAN,
+            Stream.of( l_data, 10, 20 ).map( CRawTerm::of ).collect( Collectors.toList() ),
+            Collections.emptyList()
+        );
+
+        Assert.assertArrayEquals(
+            Stream.of( 2, 1, "x", "y", 10, 20 ).toArray(),
+            l_data.toArray()
+        );
+    }
+
+    /**
+     * pull elements from the front / end
+     */
+    @Test
+    public void pullfrontend()
+    {
+        final List<Object> l_data = IntStream.range( 5, 15 ).boxed().collect( Collectors.toList() );
+
+        final List<ITerm> l_return = new ArrayList<>();
+
+        new CPullFront().execute(
+            false,
+            IContext.EMPTYPLAN,
+            Stream.of( l_data, 2 ).map( CRawTerm::of ).collect( Collectors.toList() ),
+            l_return
+        );
+
+        Assert.assertArrayEquals( Stream.of( 5, 6 ).toArray(), l_return.stream().map( ITerm::raw ).toArray() );
+        Assert.assertArrayEquals( Stream.of( 7, 8, 9, 10, 11, 12, 13, 14 ).toArray(), l_data.toArray() );
+
+        l_return.clear();
+
+        new CPullEnd().execute(
+            false,
+            IContext.EMPTYPLAN,
+            Stream.of( l_data, 3 ).map( CRawTerm::of ).collect( Collectors.toList() ),
+            l_return
+        );
+
+        Assert.assertArrayEquals( Stream.of( 14, 13, 12 ).toArray(), l_return.stream().map( ITerm::raw ).toArray() );
+        Assert.assertArrayEquals( Stream.of( 7, 8, 9, 10, 11 ).toArray(), l_data.toArray() );
     }
 
 }
