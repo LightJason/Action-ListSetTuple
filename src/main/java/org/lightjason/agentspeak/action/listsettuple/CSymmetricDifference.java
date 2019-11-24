@@ -49,7 +49,7 @@ import java.util.stream.Stream;
  *
  * {@code D = .collection/list/symmetricdifference( [1,2,[3,4]], [7,8,9,4], [[1,2], [3]] );}
  *
- * @see https://en.wikipedia.org/wiki/Symmetric_difference
+ * @see <a href="https://en.wikipedia.org/wiki/Symmetric_difference"></a>
  */
 public final class CSymmetricDifference extends IBaseAction
 {
