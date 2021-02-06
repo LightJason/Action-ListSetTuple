@@ -23,8 +23,8 @@
 
 package org.lightjason.agentspeak.action.listsettuple;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.lightjason.agentspeak.action.listsettuple.set.CAdd;
 import org.lightjason.agentspeak.action.listsettuple.set.CContains;
 import org.lightjason.agentspeak.action.listsettuple.set.CCreate;
@@ -64,9 +64,9 @@ public final class TestCActionCollectionSet extends IBaseTest
             l_return
         );
 
-        Assert.assertEquals( 1, l_return.size() );
-        Assert.assertTrue( l_return.get( 0 ).raw() instanceof Set<?> );
-        Assert.assertArrayEquals( Stream.of( 1, 2 ).toArray(), l_return.get( 0 ).<Set<?>>raw().toArray() );
+        Assertions.assertEquals( 1, l_return.size() );
+        Assertions.assertTrue( l_return.get( 0 ).raw() instanceof Set<?> );
+        Assertions.assertArrayEquals( Stream.of( 1, 2 ).toArray(), l_return.get( 0 ).<Set<?>>raw().toArray() );
     }
 
     /**
@@ -83,9 +83,9 @@ public final class TestCActionCollectionSet extends IBaseTest
             l_return
         );
 
-        Assert.assertEquals( 1, l_return.size() );
-        Assert.assertEquals( Collections.synchronizedSet( Collections.emptySet() ).getClass(), l_return.get( 0 ).raw().getClass() );
-        Assert.assertArrayEquals( Stream.of( 20, 10 ).toArray(), l_return.get( 0 ).<Set<?>>raw().toArray() );
+        Assertions.assertEquals( 1, l_return.size() );
+        Assertions.assertEquals( Collections.synchronizedSet( Collections.emptySet() ).getClass(), l_return.get( 0 ).raw().getClass() );
+        Assertions.assertArrayEquals( Stream.of( 20, 10 ).toArray(), l_return.get( 0 ).<Set<?>>raw().toArray() );
     }
 
 
@@ -103,7 +103,7 @@ public final class TestCActionCollectionSet extends IBaseTest
             Collections.emptyList()
         );
 
-        Assert.assertArrayEquals( Stream.of( 1, 5, 7 ).toArray(), l_set.toArray() );
+        Assertions.assertArrayEquals( Stream.of( 1, 5, 7 ).toArray(), l_set.toArray() );
     }
 
     /**
@@ -121,7 +121,7 @@ public final class TestCActionCollectionSet extends IBaseTest
             l_return
         );
 
-        Assert.assertArrayEquals( Stream.of( true, true, false ).toArray(), l_return.stream().map( ITerm::raw ).toArray() );
+        Assertions.assertArrayEquals( Stream.of( true, true, false ).toArray(), l_return.stream().map( ITerm::raw ).toArray() );
     }
 
     /**
@@ -139,8 +139,8 @@ public final class TestCActionCollectionSet extends IBaseTest
             l_return
         );
 
-        Assert.assertArrayEquals( l_return.stream().map( ITerm::raw ).toArray(), Stream.of( true, true, false ).toArray() );
-        Assert.assertArrayEquals( Stream.of( 2 ).toArray(), l_set.toArray() );
+        Assertions.assertArrayEquals( l_return.stream().map( ITerm::raw ).toArray(), Stream.of( true, true, false ).toArray() );
+        Assertions.assertArrayEquals( Stream.of( 2 ).toArray(), l_set.toArray() );
     }
 
     /**
@@ -158,9 +158,9 @@ public final class TestCActionCollectionSet extends IBaseTest
             l_return
         );
 
-        Assert.assertEquals( 1, l_return.size() );
-        Assert.assertTrue( l_return.get( 0 ).raw() instanceof List<?> );
-        Assert.assertArrayEquals( l_set.toArray(), l_return.get( 0 ).<List<?>>raw().toArray() );
+        Assertions.assertEquals( 1, l_return.size() );
+        Assertions.assertTrue( l_return.get( 0 ).raw() instanceof List<?> );
+        Assertions.assertArrayEquals( l_set.toArray(), l_return.get( 0 ).<List<?>>raw().toArray() );
     }
 
     /**
@@ -171,7 +171,7 @@ public final class TestCActionCollectionSet extends IBaseTest
     {
         final Set<Object> l_data = Stream.of( 1, 12.0, "foobar", "foobar", 1, 2 ).collect( Collectors.toSet() );
 
-        Assert.assertArrayEquals(
+        Assertions.assertArrayEquals(
             l_data.toArray(),
             new CLambdaStreaming().apply( l_data ).toArray()
         );

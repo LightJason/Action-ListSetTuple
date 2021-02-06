@@ -23,8 +23,8 @@
 
 package org.lightjason.agentspeak.action.listsettuple;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.lightjason.agentspeak.action.listsettuple.tuple.CCreate;
 import org.lightjason.agentspeak.action.listsettuple.tuple.CFlat;
 import org.lightjason.agentspeak.action.listsettuple.tuple.CSet;
@@ -62,26 +62,28 @@ public final class TestCActionCollectionTuple extends IBaseTest
             l_return
         );
 
-        Assert.assertEquals( 2, l_return.size() );
+        Assertions.assertEquals( 2, l_return.size() );
 
-        Assert.assertEquals( "abcd", l_return.get( 0 ).<AbstractMap.Entry<String, ?>>raw().getKey() );
-        Assert.assertEquals( 123, l_return.get( 0 ).<AbstractMap.Entry<?, Number>>raw().getValue() );
+        Assertions.assertEquals( "abcd", l_return.get( 0 ).<AbstractMap.Entry<String, ?>>raw().getKey() );
+        Assertions.assertEquals( 123, l_return.get( 0 ).<AbstractMap.Entry<?, Number>>raw().getValue() );
 
-        Assert.assertEquals( "foobar", l_return.get( 1 ).<AbstractMap.Entry<String, ?>>raw().getKey() );
-        Assert.assertTrue( l_return.get( 1 ).<AbstractMap.Entry<?, Boolean>>raw().getValue() );
+        Assertions.assertEquals( "foobar", l_return.get( 1 ).<AbstractMap.Entry<String, ?>>raw().getKey() );
+        Assertions.assertTrue( l_return.get( 1 ).<AbstractMap.Entry<?, Boolean>>raw().getValue() );
     }
 
     /**
      * test tuple creating error
      */
-    @Test( expected = CExecutionIllegealArgumentException.class )
+    @Test
     public void createerror()
     {
-        new CCreate().execute(
-                false,
-                IContext.EMPTYPLAN,
-                Stream.of( "x" ).map( CRawTerm::of ).collect( Collectors.toList() ),
-                Collections.emptyList()
+        Assertions.assertThrows( CExecutionIllegealArgumentException.class,
+                                 () -> new CCreate().execute(
+                                        false,
+                                        IContext.EMPTYPLAN,
+                                        Stream.of( "x" ).map( CRawTerm::of ).collect( Collectors.toList() ),
+                                        Collections.emptyList()
+                                 )
         );
     }
 
@@ -100,7 +102,7 @@ public final class TestCActionCollectionTuple extends IBaseTest
             Collections.emptyList()
         );
 
-        Assert.assertEquals( "blubblub", l_data.getValue() );
+        Assertions.assertEquals( "blubblub", l_data.getValue() );
     }
 
 
@@ -118,13 +120,13 @@ public final class TestCActionCollectionTuple extends IBaseTest
             l_return
         );
 
-        Assert.assertEquals( 4, l_return.size() );
+        Assertions.assertEquals( 4, l_return.size() );
 
-        Assert.assertEquals( "foo", l_return.get( 0 ).raw() );
-        Assert.assertEquals( "bar", l_return.get( 1 ).raw() );
+        Assertions.assertEquals( "foo", l_return.get( 0 ).raw() );
+        Assertions.assertEquals( "bar", l_return.get( 1 ).raw() );
 
-        Assert.assertEquals( 1, l_return.get( 2 ).<Number>raw() );
-        Assert.assertEquals( 2, l_return.get( 3 ).<Number>raw() );
+        Assertions.assertEquals( 1, l_return.get( 2 ).<Number>raw() );
+        Assertions.assertEquals( 2, l_return.get( 3 ).<Number>raw() );
     }
 
 }

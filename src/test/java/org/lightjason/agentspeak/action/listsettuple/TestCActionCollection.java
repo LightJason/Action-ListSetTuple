@@ -25,14 +25,11 @@ package org.lightjason.agentspeak.action.listsettuple;
 
 import com.codepoetics.protonpack.StreamUtils;
 import com.google.common.collect.HashMultimap;
-import com.tngtech.java.junit.dataprovider.DataProvider;
-import com.tngtech.java.junit.dataprovider.DataProviderRunner;
-import com.tngtech.java.junit.dataprovider.UseDataProvider;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.lightjason.agentspeak.language.CRawTerm;
 import org.lightjason.agentspeak.language.ITerm;
 import org.lightjason.agentspeak.language.execution.IContext;
@@ -55,7 +52,6 @@ import java.util.stream.Stream;
 /**
  * test collection action
  */
-@RunWith( DataProviderRunner.class )
 public final class TestCActionCollection extends IBaseTest
 {
 
@@ -63,82 +59,47 @@ public final class TestCActionCollection extends IBaseTest
      * data provider generator
      * @return data
      */
-    @DataProvider
-    public static Object[] generate()
+    public static Stream<Arguments> generate()
     {
         return Stream.of(
 
-            new ImmutablePair<>(
-                Stream.of( CRawTerm.of( new Object() ) ).collect( Collectors.toList() ),
-                new int[]{0}
-            ),
-
-            new ImmutablePair<>(
-                Stream.of( CRawTerm.of( new ArrayList<>() ) ).collect( Collectors.toList() ),
-                new int[]{0}
-            ),
-
-            new ImmutablePair<>(
-                Stream.of( CRawTerm.of( Stream.of( 1, "test" ).collect( Collectors.toList() ) ) ).collect( Collectors.toList() ),
-                new int[]{2}
-            ),
-
-            new ImmutablePair<>(
-                Stream.of( CRawTerm.of( new AbstractMap.SimpleEntry<>( "a", 1 ) ) ).collect( Collectors.toList() ),
-                new int[]{0}
-            ),
-
-            new ImmutablePair<>(
-                Stream.of( CRawTerm.of( Stream.of( 1, 1, "test" ).collect( Collectors.toSet() ) ) ).collect( Collectors.toList() ),
-                new int[]{2}
-            ),
-
-            new ImmutablePair<>(
-                Stream.of(
-                    CRawTerm.of( Stream.of( "abcd", "xyz", 12, 12 ).collect( Collectors.toSet() ) ),
-                    CRawTerm.of( Stream.of( 1, 2, 3, 3, 4, 4 ).collect( Collectors.toList() )  )
-                ).collect( Collectors.toList() ),
-                new int[]{3, 6}
-            ),
-
-            new ImmutablePair<>(
-                Stream.of( CRawTerm.of(
-                    StreamUtils.windowed( Stream.of( 1, 2, 3, 4 ), 2 ).collect( Collectors.toMap( i -> i.get( 0 ), i -> i.get( 1 ) ) )
-                ) ).collect( Collectors.toList() ),
-                new int[]{0}
-            ),
-
-            new ImmutablePair<>(
-                Stream.of( CRawTerm.of(
-                    StreamUtils.windowed( Stream.of( 1, 2, 3, 4 ), 2 ).collect( Collectors.toMap( i -> i.get( 0 ), i -> i.get( 1 ) ) )
-                ) ).collect( Collectors.toList() ),
-                new int[]{0}
-            )
-
-        ).toArray();
+            Arguments.of( Stream.of( new Object() ), new int[]{0} ),
+            Arguments.of( Stream.of( new ArrayList<>() ), new int[]{0} ),
+            Arguments.of( Stream.of( Stream.of( 1, "test" ).collect( Collectors.toList() ) ), new int[]{2} ),
+            Arguments.of( Stream.of( new AbstractMap.SimpleEntry<>( "a", 1 ) ), new int[]{0} ),
+            Arguments.of( Stream.of( Stream.of( 1, 1, "test" ).collect( Collectors.toSet() ) ), new int[]{2} ),
+            Arguments.of( Stream.of( Stream.of( "abcd", "xyz", 12, 12 ).collect( Collectors.toSet() ),
+                                     Stream.of( 1, 2, 3, 3, 4, 4 ).collect( Collectors.toList() ) ), new int[]{3, 6} ),
+            Arguments.of( Stream.of( StreamUtils.windowed( Stream.of( 1, 2, 3, 4 ), 2 )
+                                                .collect( Collectors.toMap( i -> i.get( 0 ), i -> i.get( 1 ) ) ) ), new int[]{0} ),
+            Arguments.of( Stream.of( StreamUtils.windowed( Stream.of( 1, 2, 3, 4 ), 2 )
+                                                .collect( Collectors.toMap( i -> i.get( 0 ), i -> i.get( 1 ) ) ) ), new int[]{0} )
+        );
     }
 
     /**
      * test size
      *
-     * @param p_input pair input data term and results
+     * @param p_input input data term
+     * @param p_result results
      */
-    @Test
-    @UseDataProvider( "generate" )
-    public void size( final Pair<List<ITerm>, int[]> p_input )
+    @ParameterizedTest
+    @MethodSource( "generate" )
+    public void size( final Stream<Object> p_input, final int[] p_result )
     {
         final List<ITerm> l_return = new ArrayList<>();
+        final List<ITerm> l_input = p_input.map( CRawTerm::of ).collect( Collectors.toList() );
 
         new CSize().execute(
             false, IContext.EMPTYPLAN,
-            p_input.getLeft(),
+            l_input,
             l_return
         );
 
-        Assert.assertArrayEquals(
-            MessageFormat.format( "elements {0}", p_input.getLeft() ),
-            p_input.getRight(),
-            l_return.stream().map( ITerm::<Number>raw ).mapToInt( Number::intValue ).toArray()
+        Assertions.assertArrayEquals(
+            p_result,
+            l_return.stream().map( ITerm::<Number>raw ).mapToInt( Number::intValue ).toArray(),
+            MessageFormat.format( "elements {0}", l_input )
         );
     }
 
@@ -158,8 +119,8 @@ public final class TestCActionCollection extends IBaseTest
             l_return
         );
 
-        Assert.assertEquals( 6, l_return.size() );
-        Assert.assertArrayEquals( Stream.of( true, true, false, false, false, false ).toArray(), l_return.stream().map( ITerm::<Boolean>raw ).toArray() );
+        Assertions.assertEquals( 6, l_return.size() );
+        Assertions.assertArrayEquals( Stream.of( true, true, false, false, false, false ).toArray(), l_return.stream().map( ITerm::<Boolean>raw ).toArray() );
     }
 
     /**
@@ -177,8 +138,8 @@ public final class TestCActionCollection extends IBaseTest
             Collections.emptyList()
         );
 
-        Assert.assertTrue( l_list.isEmpty() );
-        Assert.assertTrue( l_set.isEmpty() );
+        Assertions.assertTrue( l_list.isEmpty() );
+        Assertions.assertTrue( l_set.isEmpty() );
     }
 
     /**
@@ -189,7 +150,7 @@ public final class TestCActionCollection extends IBaseTest
     {
         final List<ITerm> l_return = new ArrayList<>();
 
-        Assert.assertTrue(
+        Assertions.assertTrue(
             execute(
                 new CComplement(),
                 false,
@@ -201,10 +162,10 @@ public final class TestCActionCollection extends IBaseTest
             )
         );
 
-        Assert.assertEquals( 1, l_return.size() );
-        Assert.assertTrue( l_return.get( 0 ).raw() instanceof List<?> );
-        Assert.assertEquals( "b", l_return.get( 0 ).<List<?>>raw().get( 0 ) );
-        Assert.assertEquals( 2, l_return.get( 0 ).<List<?>>raw().get( 1 ) );
+        Assertions.assertEquals( 1, l_return.size() );
+        Assertions.assertTrue( l_return.get( 0 ).raw() instanceof List<?> );
+        Assertions.assertEquals( "b", l_return.get( 0 ).<List<?>>raw().get( 0 ) );
+        Assertions.assertEquals( 2, l_return.get( 0 ).<List<?>>raw().get( 1 ) );
     }
 
     /**
@@ -226,9 +187,9 @@ public final class TestCActionCollection extends IBaseTest
             l_return
         );
 
-        Assert.assertEquals( 1, l_return.size() );
-        Assert.assertTrue( l_return.get( 0 ).raw() instanceof List<?> );
-        Assert.assertArrayEquals( Stream.of( 2 ).toArray(), l_return.get( 0 ).<Collection<?>>raw().toArray() );
+        Assertions.assertEquals( 1, l_return.size() );
+        Assertions.assertTrue( l_return.get( 0 ).raw() instanceof List<?> );
+        Assertions.assertArrayEquals( Stream.of( 2 ).toArray(), l_return.get( 0 ).<Collection<?>>raw().toArray() );
     }
 
     /**
@@ -244,9 +205,9 @@ public final class TestCActionCollection extends IBaseTest
             Stream.of( 1, 2, 3, 3, 4 ).map( CRawTerm::of ).collect( Collectors.toList() ),
             l_return );
 
-        Assert.assertEquals( 1, l_return.size() );
-        Assert.assertTrue( l_return.get( 0 ).raw() instanceof List<?> );
-        Assert.assertArrayEquals( Stream.of( 1, 2, 4 ).toArray(), l_return.get( 0 ).<List<?>>raw().toArray() );
+        Assertions.assertEquals( 1, l_return.size() );
+        Assertions.assertTrue( l_return.get( 0 ).raw() instanceof List<?> );
+        Assertions.assertArrayEquals( Stream.of( 1, 2, 4 ).toArray(), l_return.get( 0 ).<List<?>>raw().toArray() );
     }
 
     /**
@@ -263,8 +224,8 @@ public final class TestCActionCollection extends IBaseTest
             l_return
         );
 
-        Assert.assertEquals( 1, l_return.size() );
-        Assert.assertTrue( l_return.get( 0 ).raw() instanceof List<?> );
-        Assert.assertArrayEquals( Stream.of( 1, 2, 3, 4, "xxx" ).toArray(), l_return.get( 0 ).<Collection<?>>raw().toArray() );
+        Assertions.assertEquals( 1, l_return.size() );
+        Assertions.assertTrue( l_return.get( 0 ).raw() instanceof List<?> );
+        Assertions.assertArrayEquals( Stream.of( 1, 2, 3, 4, "xxx" ).toArray(), l_return.get( 0 ).<Collection<?>>raw().toArray() );
     }
 }
